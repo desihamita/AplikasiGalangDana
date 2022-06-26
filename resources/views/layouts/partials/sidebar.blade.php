@@ -26,7 +26,7 @@
                 <!-- Add icons to the links using the .nav-icon class
        with font-awesome or any other icon font library -->
                 <li class="nav-item">
-                    <a href="#" class="nav-link active">
+                    <a href="{{route('dashboard')}}" class="nav-link {{ request()->is('dashboard*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-tachometer-alt"></i>
                         <p>
                             Dashboard
@@ -37,7 +37,7 @@
                 @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('donatur'))
                 <li class="nav-header">MASTER</li>
                 <li class="nav-item">
-                    <a href="{{route('category.index')}}" class="nav-link">
+                    <a href="{{route('category.index')}}" class="nav-link {{ request()->is('category*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-cube"></i>
                         <p>
                             Kategori
@@ -45,7 +45,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
+                    <a href="pages/widgets.html" class="nav-link {{ request()->is('projek*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-th-large"></i>
                         <p>
                             Projek
@@ -54,7 +54,7 @@
                 </li>
                 <li class="nav-header">REFERENSI</li>
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
+                    <a href="pages/widgets.html" class="nav-link {{ request()->is('donatur*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-user-plus"></i>
                         <p>
                             Donatur
@@ -62,7 +62,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="pages/widgets.html" class="nav-link">
+                    <a href="pages/widgets.html" class="nav-link {{ request()->is('donasi*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-donate"></i>
                         <p>
                             Daftar Donasi
@@ -74,7 +74,7 @@
                 @if (auth()->user()->hasRole('admin'))
                 <li class="nav-header">INFORMASI</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->is('contact*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-envelope"></i>
                         <p>
                             Kotak Masuk
@@ -82,7 +82,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->is('subscriber*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-user-plus"></i>
                         <p>
                             Subscriber
@@ -94,7 +94,7 @@
                 @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('donatur'))
                 <li class="nav-header">REPORT</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->is('laporan*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-chart-line"></i>
                         <p>
                             Laporan
@@ -106,7 +106,7 @@
                 @if (auth()->user()->hasRole('donatur'))
                 <li class="nav-header">LOG</li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->is('log*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-info-circle "></i>
                         <p>
                             Log Aktivitas 
@@ -118,7 +118,7 @@
                 <li class="nav-header">PENGATURAN</li>
                 @if (auth()->user()->hasRole('admin'))
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->is('profile*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-user-edit"></i>
                         <p>
                             Profile
@@ -129,7 +129,7 @@
                 
                 @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('donatur'))
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="#" class="nav-link {{ request()->is('setting*') ? 'active' : ''}}">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>
                             Setting
