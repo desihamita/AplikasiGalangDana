@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{dashboardController};
 
 /*
 |--------------------------------------------------------------------------
@@ -17,28 +18,20 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified'
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
-
 Route::group([
-    'middleware' => ['auth','role:admin']
+    'middleware' => ['auth','role:admin,donatur']
 ], function(){
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+    Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
 
-Route::group([
-    'middleware' => ['auth','role:donatur']
-], function(){
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
+    Route::group([
+        'middleware' => 'role:admin'
+    ], function(){
+        //
+    });
+    
+    Route::group([
+        'middleware' => 'role:donatur'
+    ], function(){
+        //
+    });
 });
