@@ -89,20 +89,20 @@
       <div class="col-lg-6">
         <div class="form-group">
           <label for="receiver">Penerima</label>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="receiver" class="custom-control-input" id="saya">
+          <div class="custom-control custom-radio">
+            <input type="radio" name="receiver" class="custom-control-input" id="saya">
             <label class="custom-control-label font-weight-normal" for="saya">Saya Sendiri</label>
           </div>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="receiver" class="custom-control-input" id="keluarga">
+          <div class="custom-control custom-radio">
+            <input type="radio" name="receiver" class="custom-control-input" id="keluarga">
             <label class="custom-control-label font-weight-normal" for="keluarga">Keluarga / Kerabat</label>
           </div>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="receiver" class="custom-control-input" id="organisasi">
+          <div class="custom-control custom-radio">
+            <input type="radio" name="receiver" class="custom-control-input" id="organisasi">
             <label class="custom-control-label font-weight-normal" for="organisasi">Organisasi / Lembaga</label>
           </div>
-          <div class="custom-control custom-checkbox">
-            <input type="checkbox" name="receiver" class="custom-control-input" id="lainnya">
+          <div class="custom-control custom-radio">
+            <input type="radio" name="receiver" class="custom-control-input" id="lainnya">
             <label class="custom-control-label font-weight-normal" for="lainnya">Lainnya</label>
           </div>
         </div>
@@ -121,7 +121,7 @@
   
     <x-slot name="footer">
       <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-      <button class="btn btn-primary">Simpan</button>
+      <button type="button" class="btn btn-primary" onclick="submitForm(this.form)">Simpan</button>
     </x-slot>
   
   </x-modal>
