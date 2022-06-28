@@ -15,7 +15,7 @@
                     alt="User Image">
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <a href="{{ route('profile.show') }}" class="d-block">Alexander Pierce</a>
             </div>
         </div>
 
@@ -116,17 +116,6 @@
                 @endif
 
                 <li class="nav-header">PENGATURAN</li>
-                @if (auth()->user()->hasRole('admin'))
-                <li class="nav-item">
-                    <a href="#" class="nav-link {{ request()->is('profile*') ? 'active' : ''}}">
-                        <i class="nav-icon fas fa-user-edit"></i>
-                        <p>
-                            Profile
-                        </p>
-                    </a>
-                </li>
-                @endif
-                
                 @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('donatur'))
                 <li class="nav-item">
                     <a href="#" class="nav-link {{ request()->is('setting*') ? 'active' : ''}}">
