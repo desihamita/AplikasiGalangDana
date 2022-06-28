@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Campaign;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CampaignController extends Controller
 {
@@ -18,6 +20,47 @@ class CampaignController extends Controller
     {
         $category = Category::orderBy('name')->get()->pluck('name', 'id');
         return view('campaign.index', compact('category'));
+    }
+
+    public function data(Request $request)
+    {
+        $query = Campaign::orderBy('publish_date','desc')->get();
+
+        return datatables($query)
+            ->addIndexColumn()
+            ->editColumn('short_description', function ($query) {
+                return $query->title .'<br><small>'. $query->short_description .'</small>';
+            })
+            ->editColumn('path_image', function($query) {
+                return '<img src="'. Storage::disk('public')->url($query->path_image) .'" class="img-thumbnail" />';
+            })
+            ->addColumn('author', function ($query) {
+                return $query->user->name;
+            })
+            ->addColumn('action', function ($query) {
+                $text = '
+                    <a href="'. route('campaign.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
+                ';
+
+                if (auth()->user()->hasRole('donatur')) {
+                    $text .= '
+                        <a href="'. url('/campaign/'. $query->id .'/edit') .'" class="btn btn-link text-primary"><i class="fas fa-pencil-alt"></i></a>
+                    ';
+                } else {
+                    $text .= '
+                        <button onclick="editForm(`'. route('campaign.show', $query->id) .'`)" class="btn btn-link text-primary"><i class="fas fa-pencil-alt"></i></button>
+                    ';
+                }
+
+                $text .= '
+                    <button class="btn btn-link text-danger" onclick="deleteData(`'. route('campaign.destroy', $query->id) .'`)"><i class="fas fa-trash-alt"></i></button>
+                ';
+
+                return $text;
+            })
+            ->rawColumns(['short_description', 'path_image', 'action'])
+            ->escapeColumns([])
+            ->make(true);
     }
 
     /**
@@ -43,17 +86,29 @@ class CampaignController extends Controller
             'categories' => 'required|array',
             'short_description' => 'required',
             'body' => 'required|min:8',
-            'publish_date' => 'required|date_format:Y:m-d H:i',
-            'goal'=> 'required|integer',
-            'end_date' => 'required|date_format:Y:m-d H:i',
+            'publish_date' => 'required|date_format:Y-m-d H:i',
+            'status' => 'required|in:publish,archived',
+            'goal' => 'required|regex:/^[0-9.]+$/|min:7',
+            'end_date' => 'required|date_format:Y-m-d H:i',
             'note' => 'nullable',
             'receiver' => 'required',
-            'path_image'=> 'required|mimes:png,jpg,jpeg|max:2048' 
+            'path_image' => 'required|mimes:png,jpg,jpeg|max:2048'
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422); 
+            return response()->json(['errors' => $validator->errors()], 422);
         }
+
+        $data = $request->except('path_image', 'categories');
+        $data['slug'] = Str::slug($request->title);
+        $data['goal'] = str_replace('.', '', $request->goal);
+        $data['path_image'] = upload('campaign', $request->file('path_image'), 'campaign');
+        $data['user_id'] = auth()->id();
+
+        $campaign = Campaign::create($data);
+        $campaign->category_campaign()->attach($request->categories);
+
+        return response()->json(['data' => $campaign, 'message' => 'Projek berhasil ditambahkan']);
     }
 
     /**
@@ -64,7 +119,11 @@ class CampaignController extends Controller
      */
     public function show(Campaign $campaign)
     {
-        //
+        $campaign->publish_date = date('Y-m-d H:i', strtotime($campaign->publish_date));
+        $campaign->end_date = date('Y-m-d H:i', strtotime($campaign->end_date));
+        $campaign->categories = $campaign->category_campaign;
+        
+        return response()->json(['data' => $campaign]);
     }
 
     /**
@@ -87,7 +146,39 @@ class CampaignController extends Controller
      */
     public function update(Request $request, Campaign $campaign)
     {
-        //
+        $validator= Validator::make($request->all(), [
+            'title' => 'required|min:8',
+            'categories' => 'required|array',
+            'short_description' => 'required',
+            'body' => 'required|min:8',
+            'publish_date' => 'required|date_format:Y-m-d H:i',
+            'status' => 'required|in:publish,archived',
+            'goal' => 'required|regex:/^[0-9.]+$/|min:7',
+            'end_date' => 'required|date_format:Y-m-d H:i',
+            'note' => 'nullable',
+            'receiver' => 'required',
+            'path_image' => 'nullable|required|mimes:png,jpg,jpeg|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $request->except('path_image', 'categories');
+        $data['slug'] = Str::slug($request->title);
+        $data['goal'] = str_replace('.', '', $request->goal);
+        
+        if ($request->hasFile('path_image')) {
+            if (Storage::disk('public')->exists($campaign->path_image)){
+                Storage::disk('public')->delete($campaign->path_image);
+            }
+            $data['path_image'] = upload('campaign', $request->file('path_image'), 'campaign');
+        }
+
+        $campaign->update($data);
+        $campaign->category_campaign()->sync($request->categories);
+
+        return response()->json(['data' => $campaign, 'message' => 'Projek berhasil diperbarui']);
     }
 
     /**
@@ -98,6 +189,12 @@ class CampaignController extends Controller
      */
     public function destroy(Campaign $campaign)
     {
-        //
+        if (Storage::disk('public')->exists($campaign->path_image)){
+            Storage::disk('public')->delete($campaign->path_image);
+        }
+
+        $campaign->delete();
+
+        return response()->json(['data' => null, 'message' => 'Campaign berhasi dihapus']);
     }
 }
