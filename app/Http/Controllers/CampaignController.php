@@ -24,7 +24,19 @@ class CampaignController extends Controller
 
     public function data(Request $request)
     {
-        $query = Campaign::orderBy('publish_date','desc')->get();
+        $query = Campaign::orderBy('publish_date','desc')
+        ->when($request->has('status') && $request->status != "", function($query) use ($request){
+                $query->where('status', $request->status);
+        })
+        ->when(
+            $request->has('start_date') && 
+            $request->start_date != "" && 
+            $request->has('end_date') && 
+            $request->end_date != "", 
+            function ($query) use ($request) {
+                $query->whereBetween('publish_date', $request->only('start_date', 'end_date'));
+            }
+        );
 
         return datatables($query)
             ->addIndexColumn()
@@ -34,12 +46,15 @@ class CampaignController extends Controller
             ->editColumn('path_image', function($query) {
                 return '<img src="'. Storage::disk('public')->url($query->path_image) .'" class="img-thumbnail" />';
             })
+            ->editColumn('status', function ($query) {
+                return '<span class="badge badge-'. $query->statusColor() .'">'. $query->status .'</span>';
+            })
             ->addColumn('author', function ($query) {
                 return $query->user->name;
             })
             ->addColumn('action', function ($query) {
                 $text = '
-                    <a href="'. route('campaign.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
+                    <a href="'. route('campaign.detail', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
                 ';
 
                 if (auth()->user()->hasRole('donatur')) {
@@ -58,7 +73,7 @@ class CampaignController extends Controller
 
                 return $text;
             })
-            ->rawColumns(['short_description', 'path_image', 'action'])
+            ->rawColumns(['short_description', 'path_image', 'status', 'action'])
             ->escapeColumns([])
             ->make(true);
     }
@@ -87,7 +102,7 @@ class CampaignController extends Controller
             'short_description' => 'required',
             'body' => 'required|min:8',
             'publish_date' => 'required|date_format:Y-m-d H:i',
-            'status' => 'required|in:publish,archived',
+            // 'status' => 'required|in:publish,archived,pending',
             'goal' => 'required|regex:/^[0-9.]+$/|min:7',
             'end_date' => 'required|date_format:Y-m-d H:i',
             'note' => 'nullable',
@@ -132,9 +147,10 @@ class CampaignController extends Controller
      * @param  \App\Models\Campaign  $campaign
      * @return \Illuminate\Http\Response
      */
-    public function edit(Campaign $campaign)
-    {
-        //
+    public function detail($id)
+    {   
+        $campaign = Campaign::findOrFail($id);
+        return view('campaign.detail', compact('campaign'));
     }
 
     /**
@@ -152,7 +168,7 @@ class CampaignController extends Controller
             'short_description' => 'required',
             'body' => 'required|min:8',
             'publish_date' => 'required|date_format:Y-m-d H:i',
-            'status' => 'required|in:publish,archived',
+            // 'status' => 'required|in:publish,archived', 
             'goal' => 'required|regex:/^[0-9.]+$/|min:7',
             'end_date' => 'required|date_format:Y-m-d H:i',
             'note' => 'nullable',
