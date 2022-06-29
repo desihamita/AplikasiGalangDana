@@ -6,7 +6,7 @@
             <div class="col-lg-4">
                 <div class="text-center">
                     @if (Storage::disk('public')->exists(auth()->user()->path_image))
-                    <img src="{{ url(auth()->user()->path_image ?? '') }}" alt="" class="img-thumbnail preview-path_image" width="500"> 
+                    <img src="{{ Storage::disk('public')->url(auth()->user()->path_image ?? '') }}" alt="" class="img-thumbnail preview-path_image" width="500"> 
                     @else
                     <img src="{{ asset('AdminLTE/dist/img/user1-128x128.jpg') }}" alt="" class="img-thumbnail preview-path_image" width="200">
                     @endif

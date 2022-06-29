@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
     dashboardController,
     CategoryController,
-    CampaignController
+    CampaignController,
+    SettingController
 };
 
 /*
@@ -31,9 +32,13 @@ Route::group([
         'middleware' => 'role:admin'
     ], function(){
         Route::resource('/category', CategoryController::class);
+        
         Route::get('/campaign/data', [CampaignController::class, 'data'])->name('campaign.data');
-        Route::get('/campaign/detail/{id}', [CampaignController::class, 'detail'])->name('campaign.detail');
+        Route::get('/campaign/detail/{id}', [CampaignController::class, 'detail'])->name('campaign.detail');        
         Route::resource('/campaign', CampaignController::class)->except('create', 'edit');
+
+        Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
+        Route::put('/setting/{setting}', [SettingController::class, 'update'])->name('setting.update');
     });
     
     Route::group([

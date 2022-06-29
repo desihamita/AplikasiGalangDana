@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Storage;
 
-if (! function_exists('upload')) {
+if (!function_exists('upload')) {
     function upload($directory, $file, $filename = "")
     {
         $extensi  = $file->getClientOriginalExtension();
@@ -14,7 +14,7 @@ if (! function_exists('upload')) {
     }
 }
 
-if (! function_exists('format_uang')) {
+if (!function_exists('format_uang')) {
     function format_uang($angka) 
     {
         return number_format($angka, 0, ',', '.');

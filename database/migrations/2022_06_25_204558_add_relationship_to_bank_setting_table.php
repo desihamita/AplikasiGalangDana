@@ -22,7 +22,7 @@ class AddRelationshipToBankSettingTable extends Migration
                     
             $table->foreign('setting_id')
                     ->references('id')
-                    ->on('setting')
+                    ->on('settings')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
         });
