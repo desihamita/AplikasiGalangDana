@@ -25,43 +25,18 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             'path_image' => ['nullable', 'mimes:jpg,jpeg,png', 'max:1024'],
         ];
 
-        if (! empty($input['pills']) && $input['pills'] == 'bank') {
+        if($input['pills']== 'bank' ){
             $rules = [
-                'bank_id' => [
-                    'required',
-                    'exists:bank,id',
-                    Rule::unique('bank_user')->where(function ($query) use ($input) {
-                        return ! $query->where('user_id', auth()->id())
-                                       ->where('bank_id', $input['bank_id']);
-                    })
-                ],
+                'bank_id' => 'required|exists:bank,id|unique:bank_user,bank_id',
                 'account' => 'required|unique:bank_user,account',
                 'name' => 'required',
-                'is_main' => [
-                    'nullable',
-                    Rule::unique('bank_user')->where(function ($query) use ($input) {
-                        $countAvailable = $query->where('user_id', auth()->id())
-                            ->where('is_main', 1)
-                            ->count();
-
-                        if ($input['is_main'] == 1 && $countAvailable > 0) {
-                            return false;
-                        }
-
-                        return true;
-                    })
-                ]
-            ];
+            ]; 
         }
 
-        $validated = Validator::make($input, $rules, [
-            'is_main.unique' => 'Akun utama sudah ada sebelumnya.'
-        ]);
+        $validated = Validator::make($input, $rules);
 
         if ($validated->fails()) {
-            return back()
-                ->withInput()
-                ->withErrors($validated->errors());
+            return back()->withInput()->withErrors($validated->errors());
         }
 
         if (isset($input['path_image'])) {
@@ -70,11 +45,10 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 
         $user->update($input);
 
-        if (! empty($input['pills']) && $input['pills'] == 'bank') {
+        if($input['pills']== 'bank' ){
             $user->bank_user()->attach($input['bank_id'], [
                 'account' => $input['account'],
                 'name' => $input['name'],
-                'is_main' => $input['is_main'] ?? 0
             ]);
         }
 
@@ -99,4 +73,5 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 
         $user->sendEmailVerificationNotification();
     }
+    
 }

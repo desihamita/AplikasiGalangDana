@@ -5,7 +5,8 @@ use App\Http\Controllers\{
     dashboardController,
     CategoryController,
     CampaignController,
-    SettingController
+    SettingController,
+    UserProfileInformation,
 };
 
 /*
@@ -28,6 +29,9 @@ Route::group([
 ], function(){
     Route::get('/dashboard', [dashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/user/profile', [UserProfileInformation::class, 'show'])->name('profile.show');
+    Route::delete('/user/bank/{id}', [UserProfileInformation::class, 'bankDestroy'])->name('profile.bank.destroy');
+    
     Route::group([
         'middleware' => 'role:admin'
     ], function(){
