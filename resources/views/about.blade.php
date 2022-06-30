@@ -1,6 +1,6 @@
 @extends('layouts.front')
 
-@section('title', 'Tentang Kami')
+@section('title', 'Tentang kami')
 
 @push('css')
 <style>

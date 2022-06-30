@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="icon" href="{{ asset('/img/favicon.png')}}" type="image/*">
+    <link rel="icon" href="{{ asset('/img/logoYI.png')}}" type="image/*">
     </link>
 
     <!-- Bootstrap CSS -->
@@ -268,8 +268,8 @@
                             Bantuan
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="#">Login</a>
-                            <a class="dropdown-item" href="#">Register </a>
+                            <a class="dropdown-item" href="{{route('login')}}">Login</a>
+                            <a class="dropdown-item" href="{{route('register')}}">Register </a>
                         </div>
                     </div>
                 </ul>
