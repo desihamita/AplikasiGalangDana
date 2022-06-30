@@ -16,14 +16,11 @@ class CreatePaymentsTable extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('order_number')
-                  ->index();
+            $table->string('order_number')->index();
             $table->integer('nominal');
             $table->unsignedBigInteger('bank_id');
-            $table->text('note')
-                  ->nullable();
-            $table->string('path_image')
-                  ->nullable();
+            $table->text('note')->nullable();
+            $table->string('path_image')->nullable();
             $table->timestamps();
         });
     }

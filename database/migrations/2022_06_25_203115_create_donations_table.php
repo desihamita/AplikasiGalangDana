@@ -17,13 +17,10 @@ class CreateDonationsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('campaign_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('order_number')
-                  ->index();
-            $table->boolean('anonim')
-                  ->default(false);
+            $table->string('order_number')->index();
+            $table->boolean('anonim')->default(false);
             $table->integer('nominal');
-            $table->text('support')
-                  ->nullable();
+            $table->text('support')->nullable();
             $table->enum('status', ['confirmed', 'not confirmed']);
             $table->timestamps();
         });
