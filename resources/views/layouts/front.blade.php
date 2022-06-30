@@ -56,8 +56,8 @@
             color: rgba(255, 255, 255, .5);
         }
 
-                /* Header & Navbar */
-                .header {
+        /* Header & Navbar */
+        .header {
             font-size: 14px;
         }
         .navbar-brand img {
@@ -178,6 +178,30 @@
                 top: 7.5px;
             }
         }
+        /* Banner */
+        .banner {
+            min-height: 280px;
+            display: flex;
+            align-items: flex-end;
+            padding-bottom: 10px;
+            position: relative;
+        }
+        .banner.bg-charity2 {
+            background-image: url('{{ asset("/img/bgcharity2.png") }}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: bottom;
+        }
+        .banner.bg-charity2 h2 {
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, .8);
+        }
+
+        @media (max-width: 575.98px) {
+            .banner.bg-charity2 {
+                background-size: cover;
+                background-position: left;
+            }
+        }
 
     </style>
 
@@ -222,7 +246,7 @@
     {{-- Navbar --}}
     <nav class="navbar navbar-expand-sm sticky-top navbar-light bg-white border-bottom" style="top:-1px;">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="{{ url('/')}}">
               <img src="{{ asset('/img/logoYI.png')}}" alt="">
             </a>
             <button class="navbar-toggler first-load" type="button" data-toggle="collapse" data-target="#navbar1"
@@ -235,9 +259,9 @@
 
             <div class="collapse navbar-collapse" id="navbar1">
                 <ul class="navbar-nav ml-auto">
-                    <a class="nav-link active" href="#">Home</a>
-                    <a class="nav-link " href="#">Kontak</a>
-                    <a class="nav-link " href="#">Tentang Kami</a>
+                    <a class="nav-link @if(request()->is('/')) active @endif" href="{{ url('/')}}">Home</a>
+                    <a class="nav-link @if(request()->is('contact')) active @endif" href="{{ url('/contact')}}">Kontak</a>
+                    <a class="nav-link  @if(request()->is('about')) active @endif" href="#">Tentang Kami</a>
                     <div class="dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                             data-toggle="dropdown" aria-expanded="false">
@@ -255,7 +279,58 @@
 
     @yield('content')
 
-    {{-- footer --}}
+        {{-- footer --}}
+        <div class="footer bg-dark">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-lg-3 text-white-80">
+                        <div class="footer-logo mb-4">
+                            <img src="{{ asset('/img/logoYI2.png') }}" alt=""  style="width:170px">
+                        </div>
+                        <p>
+                            Jl. Hj Bona no.67, RT.02 / RW.08, <br>
+                            Limo,Depok,Jawa Barat 16515
+                        </p>
+                        <p class="mb-1"><i class="fas fa-phone-alt mr-2"></i>0813-3059-4032</p>
+                        <p class="mb-1"><i class="fas fa-envelope mr-2"></i>pedyouth@gmail.com</p>
+                        <p class="mb-1"><i class="fas fa-globe mr-2"></i>www.youtpehIndonesia.com</p>
+                    </div>
+                    <div class="col-lg-3 text-white-80">
+                        <h5 class="mb-lg-4 mb-2">Mari Berbagi</h5>
+                        <p class="mb-lg-3 mb-1">
+                            <a href="" class="text-white-80 text-decoration-none">Galang Dana</a><br>
+                            <small class="text-muted">{{ tanggal_indonesia(now()) }}</small>
+                        </p>
+                        <p class="mb-lg-3 mb-1">
+                            <a href="" class="text-white-80 text-decoration-none">Donasi</a><br> 
+                            <small class="text-muted">{{ tanggal_indonesia(now()) }}</small>
+                        </p>
+                    </div>
+                    <div class="col-lg-3 text-white-80">
+                        <h5 class="mb-lg-4 mb-1">Bantuan</h5>
+                        <p class="mb-lg-3 mb-1">
+                            <a href="" class="text-white-80 text-decoration-none">Galang Dana</a><br>
+                        </p>
+                        <p class="mb-lg-3 mb-1">
+                            <a href="" class="text-white-80 text-decoration-none">Syarat dan Ketentuan</a><br>
+                        </p>
+                        <p class="mb-lg-3 mb-1">
+                            <a href="" class="text-white-80 text-decoration-none">Kebijakan dan Privasi</a><br>
+                        </p>
+                    </div>
+                    <div class="col-lg-3 text-white-80">
+                        <h5 class="mb-lg-4 mb-2">Newsletter</h5>
+                        <form action="" class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Masukan Email">
+                            <div class="input-group append">
+                                <button class="btn btn-primary px-3"><i class="fas fa-paper-plane"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">

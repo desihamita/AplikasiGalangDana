@@ -152,55 +152,5 @@
             </div>
         </div>
     </div>
-    {{-- footer --}}
-    <div class="footer bg-dark">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-3 text-white-80">
-                    <div class="footer-logo mb-4">
-                        <img src="{{ asset('/img/logoYI2.png') }}" alt=""  style="width:170px">
-                    </div>
-                    <p>
-                        Jl. Hj Bona no.67, RT.02 / RW.08, <br>
-                        Limo,Depok,Jawa Barat 16515
-                    </p>
-                    <p class="mb-1"><i class="fas fa-phone-alt mr-2"></i>0813-3059-4032</p>
-                    <p class="mb-1"><i class="fas fa-envelope mr-2"></i>pedyouth@gmail.com</p>
-                    <p class="mb-1"><i class="fas fa-globe mr-2"></i>www.youtpehIndonesia.com</p>
-                </div>
-                <div class="col-lg-3 text-white-80">
-                    <h5 class="mb-lg-4 mb-2">Mari Berbagi</h5>
-                    <p class="mb-lg-3 mb-1">
-                        <a href="" class="text-white-80 text-decoration-none">Galang Dana</a><br>
-                        <small class="text-muted">{{ tanggal_indonesia(now()) }}</small>
-                    </p>
-                    <p class="mb-lg-3 mb-1">
-                        <a href="" class="text-white-80 text-decoration-none">Donasi</a><br> 
-                        <small class="text-muted">{{ tanggal_indonesia(now()) }}</small>
-                    </p>
-                </div>
-                <div class="col-lg-3 text-white-80">
-                    <h5 class="mb-lg-4 mb-1">Bantuan</h5>
-                    <p class="mb-lg-3 mb-1">
-                        <a href="" class="text-white-80 text-decoration-none">Galang Dana</a><br>
-                    </p>
-                    <p class="mb-lg-3 mb-1">
-                        <a href="" class="text-white-80 text-decoration-none">Syarat dan Ketentuan</a><br>
-                    </p>
-                    <p class="mb-lg-3 mb-1">
-                        <a href="" class="text-white-80 text-decoration-none">Kebijakan dan Privasi</a><br>
-                    </p>
-                </div>
-                <div class="col-lg-3 text-white-80">
-                    <h5 class="mb-lg-4 mb-2">Newsletter</h5>
-                    <form action="" class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="Masukan Email">
-                        <div class="input-group append">
-                            <button class="btn btn-primary px-3"><i class="fas fa-paper-plane"></i></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+
 @endsection
