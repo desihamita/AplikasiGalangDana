@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'login')
+@section('title', 'Login')
 
 @section('content')
     <div class="container-fluid">
