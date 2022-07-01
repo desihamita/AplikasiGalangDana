@@ -23,6 +23,7 @@
     {{-- font awesome --}}
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
         integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous" />
+    @stack('css_vendor')
 
     <style>
         body {
@@ -237,7 +238,7 @@
                 </div>
                 <div class="col-lg-2 action" style="white-space:nowrap;">
                     <a href="{{ url('/donation') }}" class="btn btn-sm btn-light py-0 rounded-0">Donasi</a>
-                    <a href="" class="btn btn-sm btn-light py-0 rounded-0">Galang Dana </a>
+                    <a href="{{ url('/campaign') }}" class="btn btn-sm btn-light py-0 rounded-0">Galang Dana </a>
                 </div>
             </div>
         </div>
@@ -338,10 +339,26 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous">
     </script>
+    @stack('scripts_vendor')
+    
     <script>
-      $('.navbar-toggler').on('click', function() {
-        $(this).removeClass('first-load')
-      })
+        $('.navbar-toggler').on('click', function() {
+            $(this).removeClass('first-load')
+        })
+        $('.custom-file-input').on('change', function() {
+            let filename = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass('selected').html(filename);
+        });
+
+        function preview(target, image) {
+            $(target).attr('src', window.URL.createObjectURL(image)).show();
+        }
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
     </script>
 
     @stack('scripts')
