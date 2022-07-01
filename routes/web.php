@@ -7,6 +7,7 @@ use App\Http\Controllers\{
     CampaignController,
     SettingController,
     UserProfileInformation,
+    FrontController,
 };
 
 /*
@@ -20,31 +21,19 @@ use App\Http\Controllers\{
 |
 */
 
-Route::get('/', function () {
-    return view('front.welcome');
-});
+Route::get('/', [FrontController::class, 'index']);
 
-Route::get('/contact', function () {
-    return view('front.contact');
-});
-Route::get('/about', function () {
-    return view('front.about');
-});
-Route::get('/donation', function () {
-    return view('front.donation.index');
-});
-Route::get('/donation/1', function () {
-    return view('front.donation.show');
-});
-Route::get('/donation/1/create', function () {
-    return view('front.donation.create');
-});
-Route::get('/donation/1/payment', function () {
-    return view('front.donation.payment');
-});
-Route::get('/donation/1/payment-confirmation', function () {
-    return view('front.donation.payment-confirmation');
-});
+Route::get('/contact',[FrontController::class, 'contact']);
+Route::post('/contact',[FrontController::class, 'contactStore']);
+
+Route::get('/about', [FrontController::class, 'about']);
+Route::get('/donation',[FrontController::class, 'donation']);
+Route::get('/donation/{id}', [FrontController::class, 'donation_detail']);
+Route::get('/donation/1/create', [FrontController::class, 'donation_create']);
+Route::get('/donation/1/payment', [FrontController::class, 'donation_payment']);
+Route::get('/donation/1/payment-confirmation',[FrontController::class, 'donation.payment_confirmation'] );
+Route::post('/subscriber',[FrontController::class, 'subscriberStore']);
+
 
 Route::group([
     'middleware' => ['auth','role:admin,donatur']
@@ -53,21 +42,21 @@ Route::group([
 
     Route::get('/user/profile', [UserProfileInformation::class, 'show'])->name('profile.show');
     Route::delete('/user/bank/{id}', [UserProfileInformation::class, 'bankDestroy'])->name('profile.bank.destroy');
-    
+
     Route::group([
         'middleware' => 'role:admin'
     ], function(){
         Route::resource('/category', CategoryController::class);
-        
+
         Route::get('/campaign/data', [CampaignController::class, 'data'])->name('campaign.data');
-        Route::get('/campaign/detail/{id}', [CampaignController::class, 'detail'])->name('campaign.detail');        
+        Route::get('/campaign/detail/{id}', [CampaignController::class, 'detail'])->name('campaign.detail');
         Route::resource('/campaign', CampaignController::class)->except('create', 'edit');
 
         Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
         Route::put('/setting/{setting}', [SettingController::class, 'update'])->name('setting.update');
         Route::delete('/setting/{setting}/bank/{id}', [SettingController::class, 'bankDestroy'])->name('setting.bank.destroy');
     });
-    
+
     Route::group([
         'middleware' => 'role:donatur'
     ], function(){

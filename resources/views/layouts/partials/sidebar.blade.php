@@ -118,15 +118,17 @@
                 </li>
                 @endif
 
+                @if (auth()->user()->hasRole('admin'))
                 <li class="nav-header">SISTEM</li>
                 <li class="nav-item">
-                    <a href="{{ route('setting.index') }}" class="nav-link {{ request()->is('setting*') ? 'active' : '' }}">
+                    <a href="{{ route('setting.index') }}" class="nav-link {{ request()->is('admin/setting*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-cogs"></i>
                         <p>
                             Pengaturan
                         </p>
                     </a>
                 </li>
+                @endif
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

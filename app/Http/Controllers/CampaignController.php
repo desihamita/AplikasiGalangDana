@@ -29,10 +29,10 @@ class CampaignController extends Controller
                 $query->where('status', $request->status);
         })
         ->when(
-            $request->has('start_date') && 
-            $request->start_date != "" && 
-            $request->has('end_date') && 
-            $request->end_date != "", 
+            $request->has('start_date') &&
+            $request->start_date != "" &&
+            $request->has('end_date') &&
+            $request->end_date != "",
             function ($query) use ($request) {
                 $query->whereBetween('publish_date', $request->only('start_date', 'end_date'));
             }
@@ -137,7 +137,7 @@ class CampaignController extends Controller
         $campaign->publish_date = date('Y-m-d H:i', strtotime($campaign->publish_date));
         $campaign->end_date = date('Y-m-d H:i', strtotime($campaign->end_date));
         $campaign->categories = $campaign->category_campaign;
-        
+
         return response()->json(['data' => $campaign]);
     }
 
@@ -148,7 +148,7 @@ class CampaignController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function detail($id)
-    {   
+    {
         $campaign = Campaign::findOrFail($id);
         return view('campaign.detail', compact('campaign'));
     }
@@ -168,7 +168,7 @@ class CampaignController extends Controller
             'short_description' => 'required',
             'body' => 'required|min:8',
             'publish_date' => 'required|date_format:Y-m-d H:i',
-            // 'status' => 'required|in:publish,archived', 
+            // 'status' => 'required|in:publish,archived',
             'goal' => 'required|regex:/^[0-9.]+$/|min:7',
             'end_date' => 'required|date_format:Y-m-d H:i',
             'note' => 'nullable',
@@ -183,7 +183,7 @@ class CampaignController extends Controller
         $data = $request->except('path_image', 'categories');
         $data['slug'] = Str::slug($request->title);
         $data['goal'] = str_replace('.', '', $request->goal);
-        
+
         if ($request->hasFile('path_image')) {
             if (Storage::disk('public')->exists($campaign->path_image)){
                 Storage::disk('public')->delete($campaign->path_image);

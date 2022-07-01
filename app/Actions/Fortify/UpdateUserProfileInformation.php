@@ -45,7 +45,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 
         $user->update($input);
 
-        if($input['pills']== 'bank' ){
+        if($input['pills']== 'ank' ){
             $user->bank_user()->attach($input['bank_id'], [
                 'account' => $input['account'],
                 'name' => $input['name'],

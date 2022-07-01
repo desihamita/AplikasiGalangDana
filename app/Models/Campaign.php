@@ -17,6 +17,11 @@ class Campaign extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    
+    public function donations()
+    {
+        return $this->hasMany(Donation::class, 'campaign_id', 'id');
+    }
 
     public function statusColor()
     {
