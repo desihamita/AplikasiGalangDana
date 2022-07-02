@@ -24,14 +24,25 @@ use App\Http\Controllers\{
 Route::get('/', [FrontController::class, 'index']);
 
 Route::get('/contact',[FrontController::class, 'contact']);
-Route::post('/contact',[FrontController::class, 'contactStore']);
+Route::post('/contact',[FrontController::class, 'contact_store']);
 
 Route::get('/about', [FrontController::class, 'about']);
+
 Route::get('/donation',[FrontController::class, 'donation']);
 Route::get('/donation/{id}', [FrontController::class, 'donation_detail']);
-Route::get('/donation/1/create', [FrontController::class, 'donation_create']);
-Route::get('/donation/1/payment', [FrontController::class, 'donation_payment']);
-Route::get('/donation/1/payment-confirmation',[FrontController::class, 'donation.payment_confirmation'] );
+
+Route::group([
+    'middleware' => ['auth','role:admin,donatur']
+], function(){
+    Route::get('/donation/{id}/create', [FrontController::class, 'donation_create']);
+
+    Route::post('/donation/{id}', [FrontController::class, 'donation_store']);
+
+    Route::get('/donation/{id}/payment/{order_number}', [FrontController::class, 'donation_payment']);
+    Route::get('/donation/{id}/payment-confirmation/{order_number}',[FrontController::class, 'donation_payment_confirmation'] );
+    Route::post('/donation/{id}/payment-confirmation/{order_number}',[FrontController::class, 'donation_payment_confirmation_store'] );
+});
+
 Route::post('/subscriber',[FrontController::class, 'subscriberStore']);
 
 

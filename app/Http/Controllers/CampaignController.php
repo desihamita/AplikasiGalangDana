@@ -177,7 +177,7 @@ class CampaignController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error_msg' => $validator->errors()], 422);
         }
 
         $data = $request->except('path_image', 'categories');
