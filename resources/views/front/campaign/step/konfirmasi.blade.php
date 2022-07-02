@@ -6,15 +6,18 @@
         <label class="custom-control-label font-weight-normal" for="saya">Saya Sendiri</label>
     </div>
     <div class="custom-control custom-radio">
-        <input type="radio" name="receiver" class="custom-control-input" id="keluarga" value="Keluarga / Kerabat">
+        <input type="radio" name="receiver" class="custom-control-input" id="keluarga" value="Keluarga / Kerabat"
+            {{ isset($campaign) && $campaign->receiver == 'Keluarga / Kerabat' ? 'checked' : '' }}>
         <label class="custom-control-label font-weight-normal" for="keluarga">Keluarga / Kerabat</label>
     </div>
     <div class="custom-control custom-radio">
-        <input type="radio" name="receiver" class="custom-control-input" id="organisasi" value="Organisasi / Lembaga">
+        <input type="radio" name="receiver" class="custom-control-input" id="organisasi" value="Organisasi / Lembaga"
+            {{ isset($campaign) && $campaign->receiver == 'Organisasi / Lembaga' ? 'checked' : '' }}>
         <label class="custom-control-label font-weight-normal" for="organisasi">Organisasi / Lembaga</label>
     </div>
     <div class="custom-control custom-radio">
-        <input type="radio" name="receiver" class="custom-control-input" id="lainnya" value="Lainnya">
+        <input type="radio" name="receiver" class="custom-control-input" id="lainnya" value="Lainnya"
+            {{ isset($campaign) && $campaign->receiver == 'Lainnya' ? 'checked' : '' }}>
         <label class="custom-control-label font-weight-normal" for="lainnya">Lainnya</label>
     </div>
 </div>

@@ -24,19 +24,22 @@ class CampaignController extends Controller
 
     public function data(Request $request)
     {
-        $query = Campaign::orderBy('publish_date','desc')
-        ->when($request->has('status') && $request->status != "", function($query) use ($request){
-                $query->where('status', $request->status);
-        })
-        ->when(
-            $request->has('start_date') &&
-            $request->start_date != "" &&
-            $request->has('end_date') &&
-            $request->end_date != "",
-            function ($query) use ($request) {
-                $query->whereBetween('publish_date', $request->only('start_date', 'end_date'));
-            }
-        );
+        $query = Campaign::when(auth()->user()->hasRole('donatur'), function($query){
+                    $query->donatur();
+            })
+            ->when($request->has('status') && $request->status != "", function($query) use ($request){
+                    $query->where('status', $request->status);
+            })
+            ->when(
+                $request->has('start_date') &&
+                $request->start_date != "" &&
+                $request->has('end_date') &&
+                $request->end_date != "",
+                function ($query) use ($request) {
+                    $query->whereBetween('publish_date', $request->only('start_date', 'end_date'));
+                }
+            )
+            ->orderBy('publish_date','desc');
 
         return datatables($query)
             ->addIndexColumn()
@@ -54,7 +57,7 @@ class CampaignController extends Controller
             })
             ->addColumn('action', function ($query) {
                 $text = '
-                    <a href="'. route('campaign.detail', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
+                    <a href="'. route('campaign.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
                 ';
 
                 if (auth()->user()->hasRole('donatur')) {
@@ -85,7 +88,8 @@ class CampaignController extends Controller
      */
     public function create()
     {
-        //
+        $category = Category::orderBy('name')->get()->pluck('name', 'id');
+        return view('front.campaign.index', compact('category'));
     }
 
     /**
@@ -96,21 +100,27 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
-        $validator= Validator::make($request->all(), [
+        $rules = [
             'title' => 'required|min:8',
             'categories' => 'required|array',
             'short_description' => 'required',
             'body' => 'required|min:8',
             'publish_date' => 'required|date_format:Y-m-d H:i',
-            // 'status' => 'required|in:publish,archived,pending',
-            'goal' => 'required|regex:/^[0-9.]+$/|min:7',
+            'status' => 'required|in:publish,archived',
+            'goal' => 'required|integer',
             'end_date' => 'required|date_format:Y-m-d H:i',
             'note' => 'nullable',
             'receiver' => 'required',
             'path_image' => 'required|mimes:png,jpg,jpeg|max:2048'
-        ]);
+        ];
 
-        if ($validator->fails()) {
+        if(auth()->user()->hasRole('donatur')) {
+            $rules['status'] = 'nullable';
+        }
+
+        $validator= Validator::make($request->all(), $rules);
+
+        if($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
@@ -132,8 +142,12 @@ class CampaignController extends Controller
      * @param  \App\Models\Campaign  $campaign
      * @return \Illuminate\Http\Response
      */
-    public function show(Campaign $campaign)
+    public function show(Request $request, Campaign $campaign)
     {
+        if (! $request->ajax()) {
+            return view('campaign.detail', compact('campaign'));
+        }
+
         $campaign->publish_date = date('Y-m-d H:i', strtotime($campaign->publish_date));
         $campaign->end_date = date('Y-m-d H:i', strtotime($campaign->end_date));
         $campaign->categories = $campaign->category_campaign;
@@ -141,16 +155,11 @@ class CampaignController extends Controller
         return response()->json(['data' => $campaign]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Campaign  $campaign
-     * @return \Illuminate\Http\Response
-     */
-    public function detail($id)
+    public function edit($id)
     {
+        $category = Category::orderBy('name')->get()->pluck('name', 'id');
         $campaign = Campaign::findOrFail($id);
-        return view('campaign.detail', compact('campaign'));
+        return view('front.campaign.index', compact('category', 'campaign'));
     }
 
     /**
@@ -162,22 +171,27 @@ class CampaignController extends Controller
      */
     public function update(Request $request, Campaign $campaign)
     {
-        $validator= Validator::make($request->all(), [
+        $rules = [
             'title' => 'required|min:8',
             'categories' => 'required|array',
             'short_description' => 'required',
             'body' => 'required|min:8',
             'publish_date' => 'required|date_format:Y-m-d H:i',
-            // 'status' => 'required|in:publish,archived',
-            'goal' => 'required|regex:/^[0-9.]+$/|min:7',
+            'status' => 'required|in:publish,archived',
+            'goal' => 'required|integer',
             'end_date' => 'required|date_format:Y-m-d H:i',
             'note' => 'nullable',
             'receiver' => 'required',
-            'path_image' => 'nullable|required|mimes:png,jpg,jpeg|max:2048'
-        ]);
+            'path_image' => 'nullable|mimes:png,jpg,jpeg|max:2048'
+        ];
+
+        if(auth()->user()->hasRole('donatur')) {
+            $rules['status'] = 'nullable';
+        }
+        $validator= Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return response()->json(['error_msg' => $validator->errors()], 422);
+            return response()->json(['errors' => $validator->errors()], 422);
         }
 
         $data = $request->except('path_image', 'categories');

@@ -17,7 +17,7 @@ class Campaign extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
-    
+
     public function donations()
     {
         return $this->hasMany(Donation::class, 'campaign_id', 'id');
@@ -26,7 +26,6 @@ class Campaign extends Model
     public function statusColor()
     {
         $color = '';
-
         switch ($this->status) {
             case 'publish':
                 $color = 'success';
@@ -42,5 +41,10 @@ class Campaign extends Model
         }
 
         return $color;
+    }
+
+    public function scopeDonatur($query)
+    {
+        return $query->where('user_id', auth()->id());
     }
 }
