@@ -129,4 +129,3 @@
     </div>
 @endsection
 
-<x-toast />

@@ -55,7 +55,7 @@
       <x-table>
         <x-slot name="thead">
           <th width="5%">No</th>
-          <th width="20%"></th>
+          <th></th>
           <th>Deskripsi</th>
           <th>Tgl Publish</th>
           <th>Status</th>

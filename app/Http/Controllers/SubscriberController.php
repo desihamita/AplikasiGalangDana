@@ -7,79 +7,49 @@ use Illuminate\Http\Request;
 
 class SubscriberController extends Controller
 {
-    /**
+     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        return view('subscriber.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function data()
     {
-        //
-    }
+        $query = Subscriber::orderBy('created_at');
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Subscriber  $subscriber
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Subscriber $subscriber)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Subscriber  $subscriber
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Subscriber $subscriber)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Subscriber  $subscriber
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Subscriber $subscriber)
-    {
-        //
+        return datatables($query)
+            ->addIndexColumn()
+            ->editColumn('email', function ($query) {
+                return '<a href="mailto:'. $query->email .'" target="_blank">'. $query->email .'</a>';
+            })
+            ->editColumn('created_at', function ($query) {
+                return tanggal_indonesia($query->created_at);
+            })
+            ->addColumn('action', function ($query) {
+                return '
+                    <button class="btn btn-link text-danger" onclick="deleteData(`'. route('subscriber.destroy', $query->id) .'`)"><i class="fas fa-trash-alt"></i></button>
+                ';
+            })
+            ->escapeColumns([])
+            ->make(true);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Subscriber  $subscriber
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Subscriber $subscriber)
+    public function destroy($id)
     {
-        //
+        $subscriber = Subscriber::findOrFail($id);
+
+        $subscriber->delete();
+
+        return response()->json(['data' => null, 'message' => 'Subscriber berhasil dihapus']);
     }
 }

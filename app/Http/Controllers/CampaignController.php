@@ -82,17 +82,6 @@ class CampaignController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        $category = Category::orderBy('name')->get()->pluck('name', 'id');
-        return view('front.campaign.index', compact('category'));
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -145,7 +134,7 @@ class CampaignController extends Controller
     public function show(Request $request, Campaign $campaign)
     {
         if (! $request->ajax()) {
-            return view('campaign.detail', compact('campaign'));
+            return view('campaign.show', compact('campaign'));
         }
 
         $campaign->publish_date = date('Y-m-d H:i', strtotime($campaign->publish_date));
@@ -153,13 +142,6 @@ class CampaignController extends Controller
         $campaign->categories = $campaign->category_campaign;
 
         return response()->json(['data' => $campaign]);
-    }
-
-    public function edit($id)
-    {
-        $category = Category::orderBy('name')->get()->pluck('name', 'id');
-        $campaign = Campaign::findOrFail($id);
-        return view('front.campaign.index', compact('category', 'campaign'));
     }
 
     /**
@@ -209,6 +191,29 @@ class CampaignController extends Controller
         $campaign->category_campaign()->sync($request->categories);
 
         return response()->json(['data' => $campaign, 'message' => 'Projek berhasil diperbarui']);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:publish,archived,pending',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $campaign = Campaign::findOrFail($id);
+        $campaign->update($request->only('status'));
+
+        $statusText = "";
+        if ($request->status == 'publish') {
+            $statusText = 'dikonfirmasi';
+        } elseif ($request->status == 'archived') {
+            $statusText = 'diarsipkan';
+        }
+
+        return response()->json(['data' => $campaign, 'message' => 'Projek berhasil '. $statusText]);
     }
 
     /**

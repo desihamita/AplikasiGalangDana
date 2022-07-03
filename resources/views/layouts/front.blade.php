@@ -237,7 +237,7 @@
                 </div>
                 <div class="col-lg-2 action" style="white-space:nowrap;">
                     <a href="{{ url('/donation') }}" class="btn btn-sm btn-light py-0 rounded-0">Donasi</a>
-                    <a href="{{ route('campaign.create') }}" class="btn btn-sm btn-light py-0 rounded-0">Galang Dana </a>
+                    <a href="{{ url('/campaign') }}" class="btn btn-sm btn-light py-0 rounded-0">Galang Dana </a>
                 </div>
             </div>
         </div>
@@ -268,8 +268,8 @@
                             Bantuan
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{route('login')}}">Login</a>
-                            <a class="dropdown-item" href="{{route('register')}}">Register </a>
+                            <a class="dropdown-item" href="{{ route('login') }}">Login</a>
+                            <a class="dropdown-item" href="{{ route('register') }}">Register </a>
                         </div>
                     </div>
                 </ul>
@@ -325,6 +325,7 @@
             </div>
         </div>
     </div>
+    <x-toast />
 
     <!-- jQuery -->
     <script src="{{asset('/AdminLTE/plugins/jquery/jquery.min.js')}}"></script>
@@ -332,9 +333,8 @@
         integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous">
     </script>
 
-    <x-toast />
     @stack('scripts_vendor')
-    
+
     <!-- AdminLTE App -->
     <script src="{{asset('/AdminLTE/dist/js/adminlte.js')}}"></script>
     <script src="{{asset('/js/custom.js')}}"></script>

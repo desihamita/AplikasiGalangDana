@@ -52,7 +52,7 @@
                                         @enderror
                                     </div>
                                     <div class="form-group mb-3">
-                                        <label for="password_confirmation">Password</label>
+                                        <label for="password_confirmation">Konfirmasi Password</label>
                                         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" value="{{ old('password_confirmation')}}">
 
                                         @error('password_confirmation')
@@ -82,4 +82,3 @@
         </div>
     </div>
 @endsection
-    
