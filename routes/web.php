@@ -10,6 +10,7 @@ use App\Http\Controllers\{
     DonaturController,
     ContactController,
     SubscriberController,
+    ReportController,
 };
 use App\Http\Controllers\Front\{
     AboutController,
@@ -100,5 +101,8 @@ Route::group([
 
         Route::get('/subscriber/data', [SubscriberController::class, 'data'])->name('subscriber.data');
         Route::resource('/subscriber', SubscriberController::class)->only('index', 'destroy');
+
+        Route::get('/report/data', [ReportController::class, 'data'])->name('report.data');
+        Route::get('/report', [ReportController::class, 'index'])->name('report.index');
     });
 });

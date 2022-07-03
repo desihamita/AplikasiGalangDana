@@ -3,6 +3,8 @@ $('.custom-file-input').on('change', function() {
     $(this).next('.custom-file-label').addClass('selected').html(filename);
 });
 
+$('[data-toggle="tooltip"]').tooltip()
+
 $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -12,6 +14,8 @@ $.ajaxSetup({
 function preview(target, image) {
     $(target).attr('src', window.URL.createObjectURL(image)).show();
 }
+
+
 
 function resetForm(selector) {
     $(selector)[0].reset();

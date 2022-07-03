@@ -2,7 +2,7 @@
     <!-- Brand Logo -->
     <a href="{{ url('/') }}" class="brand-link bg-primary">
         <img src="{{ Storage::disk('public')->url($setting->path_image ?? '') }}" alt="AdminLTE Logo"
-            class="brand-image img-circle elevation-3 bg-lighxxxt" style="opacity: .8">
+            class="brand-image img-circle elevation-3 bg-light" style="opacity: .8">
         <span class="brand-text font-weight-light">{{ $setting->company_name }}</span>
     </a>
 
@@ -11,7 +11,7 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                @if ( Storage::disk('public')->exists(auth()->user()->path_image))
+                @if (Storage::disk('public')->exists(auth()->user()->path_image))
                 <img src="{{ Storage::disk('public')->url(auth()->user()->path_image) }}" alt="" class="img-circle elevation-2">
                 @else
                 <img src="{{ asset('AdminLTE/dist/img/user1-128x128.jpg') }}" alt="" class="img-circle elevation-2">
@@ -52,7 +52,7 @@
                 @else
                 <li class="nav-header">MASTER</li>
                 @endif
-                @if (auth()->user()->hasRole('admin') )
+                @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('donatur'))
                 <li class="nav-item">
                     <a href="{{ route('campaign.index') }}" class="nav-link {{ request()->is('admin/campaign*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-folder"></i>
@@ -64,7 +64,7 @@
                 <li class="nav-header">REFERENSI</li>
                 @if (auth()->user()->hasRole('admin'))
                 <li class="nav-item">
-                    <a href="{{ route('donatur.index')}}" class="nav-link {{ request()->is('admin/donatur*') ? 'active' : '' }}">
+                    <a href="{{ route('donatur.index') }}" class="nav-link {{ request()->is('admin/donatur*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-plus"></i>
                         <p>
                             Donatur
@@ -73,7 +73,7 @@
                 </li>
                 @endif
                 <li class="nav-item">
-                    <a href="" class="nav-link {{ request()->is('admin/donation*') ? 'active' : '' }}">
+                    <a href="{{ route('donation.index') }}" class="nav-link {{ request()->is('admin/donation*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-donate"></i>
                         <p>
                             Daftar Donasi
@@ -92,7 +92,7 @@
 
                 @if (auth()->user()->hasRole('admin'))
                 <li class="nav-item">
-                    <a href="{{ route('contact.index')}}" class="nav-link {{ request()->is('admin/contact*') ? 'active' : '' }}">
+                    <a href="{{ route('contact.index') }}" class="nav-link {{ request()->is('admin/contact*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-envelope"></i>
                         <p>
                             Kontak Masuk
@@ -100,7 +100,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('subscriber.index')}}" class="nav-link {{ request()->is('admin/subscriber*') ? 'active' : '' }}">
+                    <a href="{{ route('subscriber.index') }}" class="nav-link {{ request()->is('admin/subscriber*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-user-plus"></i>
                         <p>
                             Subscriber

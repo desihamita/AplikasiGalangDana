@@ -33,6 +33,9 @@ class DonaturController extends Controller
 
         return datatables($query)
             ->addIndexColumn()
+            ->editColumn('name', function ($query) {
+                return $query->name . '<br><a target="_blank" href="mailto:'. $query->email .'">'. $query->email .'</a>';
+            })
             ->editColumn('path_image', function($query) {
                 if (Storage::disk('public')->exists($query->path_image)) {
                     return '<img src="'. Storage::disk('public')->url($query->path_image) .'" class="img-thumbnail" />';
@@ -145,7 +148,7 @@ class DonaturController extends Controller
         if (Storage::disk('public')->exists($donatur->path_image)) {
             Storage::disk('public')->delete($donatur->path_image);
         }
-        
+
         $donatur->delete();
 
         return response()->json(['data' => null, 'message' => 'Donatur berhasi dihapus']);

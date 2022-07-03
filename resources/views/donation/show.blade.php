@@ -1,23 +1,22 @@
 @extends('layouts.app')
 
-@section('title', 'Campaign')
-
+@section('title', 'Donasi')
 @section('breadcrumb')
-@parent
-<li class="breadcrumb-item "><a href="{{ route('campaign.index')}}">Campaign</a></li>
-<li class="breadcrumb-item active">Detail</li>
+    @parent
+    <li class="breadcrumb-item"><a href="{{ route('donation.index') }}">Donasi</a></li>
+    <li class="breadcrumb-item active">Detail</li>
 @endsection
 
 @push('css')
-    <style>
-      .daftar-donasi.nav-pills .nav-link.active,
-      .daftar-donasi.nav-pills .show>.nav-link {
+<style>
+    .daftar-donasi.nav-pills .nav-link.active,
+    .daftar-donasi.nav-pills .show>.nav-link {
         background: transparent;
         color: var(--dark);
         border-bottom: 3px solid var(--blue);
         border-radius: 0;
-      }
-    </style>
+    }
+</style>
 @endpush
 
 @section('content')
@@ -25,42 +24,96 @@
     <div class="col-lg-8">
         <x-card>
             <x-slot name="header">
-                <h3>{{ $campaign->title}}</h3>
-                <p class="font-weight-bold mb-0">Diposting oleh
-                    <span class="text-primary">{{ $campaign->user->name }}</span>
-                    <small class="d-block">{{ tanggal_indonesia($campaign->publish_date) }}
-                        {{ date('H:i', strtotime($campaign->publish_date))}}</small>
+                <h3>{{ $donation->campaign->title }}</h3>
+                <p class="font-weight-bold mb-0">
+                    Diposting oleh <span class="text-primary">{{ $donation->campaign->user->name }}</span>
+                    <small class="d-block">{{ tanggal_indonesia($donation->campaign->publish_date) }} {{ date('H:i', strtotime($donation->campaign->publish_date)) }}</small>
                 </p>
             </x-slot>
-            {!! $campaign->body !!}
 
-            @if ($campaign->status == 'pending' && auth()->user()->hasRole('admin'))
-            <x-slot name="footer">
-                <button class="btn btn-success float-right"
-                    onclick="editForm('{{ route('campaign.update_status', $campaign->id) }}', 'publish', 'Yakin ingin mengkonfirmasi projek terpilih?', 'success')">Konfirmasi</button>
-            </x-slot>
-            @elseif($campaign->status == 'publish' && auth()->user()->hasRole('admin'))
-            <x-slot name="footer">
-                <button class="btn btn-danger"
-                    onclick="editForm('{{ route('campaign.update_status', $campaign->id) }}', 'archived', 'Yakin ingin mengarsipkan projek terpilih?', 'danger')">Arsipkan</button>
-            </x-slot>
-            @elseif ($campaign->status == 'archived' && auth()->user()->hasRole('admin'))
-            <x-slot name="footer">
-                <button class="btn btn-success float-right"
-                    onclick="editForm('{{ route('campaign.update_status', $campaign->id) }}', 'publish', 'Yakin ingin membuka arsip projek terpilih?', 'success')">Buka Arsip</button>
-            </x-slot>
+            {!! $donation->campaign->short_description !!}
+
+            <br>
+            <strong class="d-block mt-3 mb-2">Donatur</strong>
+            <table class="table table-sm table-bordered">
+                <tbody>
+                    <tr>
+                        <td width="35%">ID Transaksi</td>
+                        <td>: {{ $donation->order_number }}</td>
+                    </tr>
+                    <tr>
+                        <td width="35%">Donatur</td>
+                        <td>: {{ $donation->user->name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jumlah</td>
+                        <td>: {{ format_uang($donation->nominal) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal Donasi</td>
+                        <td>: {{ tanggal_indonesia($donation->created_at) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>: <span class="badge badge-{{ $donation->statusColor() }}">{{ $donation->statusText() }}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <strong class="d-block mt-3 mb-2">Pembayaran</strong>
+            @if ($donation->payment)
+            <table class="table table-sm table-bordered">
+                <tbody>
+                    <tr>
+                        <td width="35%">Pengirim</td>
+                        <td>: {{ $donation->payment->name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Jumlah</td>
+                        <td>: {{ format_uang($donation->payment->nominal) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal Transfer</td>
+                        <td>: {{ tanggal_indonesia($donation->payment->created_at) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Bukti Transfer</td>
+                        <td>:
+                            <a href="javascript:void(0)" class="badge badge-dark" data-toggle="modal" data-target="#bukti-transaksi">Lihat</a>
+                            @if (Storage::disk('public')->exists($donation->payment->path_image))
+                            <a href="{{ Storage::disk('public')->url($donation->payment->path_image) }}" class="badge badge-success ml-1" download="">Download</a>
+                            @endif
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            @else
+            Belum tersedia
             @endif
 
+            @if ($donation->status == 'not confirmed')
+            <x-slot name="footer">
+                @if ($donation->user_id == auth()->id())
+                <button class="btn btn-danger float-left"
+                    onclick="editForm('{{ route('donation.update', $donation->id) }}', 'canceled', 'Yakin ingin membatalkan donasi terpilih?', 'danger')">Batalkan</button>
+                @endif
+
+                @if (auth()->user()->hasRole('admin'))
+                <button class="btn btn-success float-right"
+                    onclick="editForm('{{ route('donation.update', $donation->id) }}', 'confirmed', 'Yakin ingin mengkonfirmasi donasi terpilih?', 'success')">Konfirmasi</button>
+                @endif
+            </x-slot>
+            @endif
         </x-card>
     </div>
-
     <div class="col-lg-4">
         <x-card>
             <x-slot name="header">
-                <h5 class="card-title"> Category </h5>
+                <h5 class="card-title">Kategori</h5>
             </x-slot>
+
             <ul>
-                @foreach ($campaign->category_campaign as $item)
+                @foreach ($donation->campaign->category_campaign as $item)
                 <li>{{ $item->name }}</li>
                 @endforeach
             </ul>
@@ -68,107 +121,97 @@
 
         <x-card>
             <x-slot name="header">
-                <h5 class="card-title"> Gambar Unggulan </h5>
+                <h5 class="card-title">Gambar Unggulan</h5>
             </x-slot>
-            <img src="{{ Storage::disk('public')->url($campaign->path_image) }}" class="img-thumbnail">
-        </x-card>
 
-        <x-card>
-            <h3 class="font-weight-bold">Rp. {{ format_uang(300000)}}</h3>
-            <p class="font-weight-bold">Tekumpul dari Rp. {{format_uang(10000000)}}</p>
-            <div class="progress" style="height:.3rem;">
-                <div class="progress-bar" role="progressbar" style="width: 7%" aria-valuenow="7" aria-valuemin="0"
-                    aria-valuemax="100"></div>
-            </div>
-
-            <div class="d-flex justify-content-between">
-                <p>7% tercapai</p>
-                <p>3 bulan lagi </p>
-            </div>
-
-            <h4 class="font-weight-bold">Donatur(3)</h4>
-            <ul class="nav nav-pills mb-3 daftar-donasi" id="pills-tab" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="pills-waktu-tab" data-toggle="pill" href="#pills-waktu" role="tab"
-                        aria-controls="pills-waktu" aria-selected="true">Waktu</a>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <a class="nav-link" id="pills-jumlah-tab" data-toggle="pill" href="#pills-jumlah" role="tab"
-                        aria-controls="pills-jumlah" aria-selected="false">Jumlah</a>
-                </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-waktu" role="tabpanel" aria-labelledby="pills-waktu-tab">
-                  @for ($i = 0; $i < 3; $i++)
-                      <div>
-                        <p class="font-weight-bold mb-0">User</p>
-                        <p class="font-weight-bold mb-0">Rp. {{ format_uang(100000)}}</p>
-                        <p class="text-muted mb-0">{{ tanggal_indonesia(date('Y-m-d H:i:s')) }}</p>
-                      </div>
-                  @endfor
-                </div>
-                <div class="tab-pane fade" id="pills-jumlah" role="tabpanel" aria-labelledby="pills-jumlah-tab">
-
-                </div>
-            </div>
+            <img src="{{ Storage::disk('public')->url($donation->campaign->path_image) }}" class="img-thumbnail">
         </x-card>
     </div>
 </div>
 
 <x-modal size="modal-md">
-    <x-slot name="title">
-        Konfirmasi
-    </x-slot>
+    <x-slot name="title">Form Konfirmasi</x-slot>
 
     @method('put')
 
-    <input type="hidden" name="status" value="publish">
+    <input type="hidden" name="status">
 
     <div class="alert mt-3">
         <i class="fas fa-info-circle mr-1"></i> <span class="text-message"></span>
     </div>
 
     <x-slot name="footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-        <button type="button" class="btn btn-primary" onclick="submitForm(this.form)">Simpan</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tidak</button>
+        <button type="button" class="btn btn-primary" onclick="submitForm(this.form)">Ya</button>
     </x-slot>
 </x-modal>
 
+@if ($donation->payment)
+<x-modal size="modal-lg" id="bukti-transaksi">
+    <x-slot name="title">Bukti Transaksi</x-slot>
+
+    @if (Storage::disk('public')->exists($donation->payment->path_image))
+    <img src="{{ Storage::disk('public')->url($donation->payment->path_image) }}" alt="{{ $donation->payment->path_image }}"
+        class="img-thumbnail">
+    @else
+    Tidak tersedia
+    @endif
+
+    @if (Storage::disk('public')->exists($donation->payment->path_image))
+    <x-slot name="footer">
+        <a href="{{ Storage::disk('public')->url($donation->payment->path_image) }}" class="btn btn-success" download=""><i class="fas fa-download"></i></a>
+    </x-slot>
+    @endif
+</x-modal>
+@endif
 @endsection
 
 @push('scripts')
 <script>
     let modal = '#modal-form';
     function editForm(url, status, message, color) {
-        $(modal).modal('show');
-        $(`${modal} form`).attr('action', url);
+        $.get(url)
+            .done(response => {
+                $(modal).modal('show');
+                $(`${modal} form`).attr('action', url);
+                $(`${modal} [name=_method]`).val('put');
+                resetForm(`${modal} form`);
 
-        $(`${modal} [name=status]`).val(status);
-        $(`${modal} .text-message`).text(message);
-        $(`${modal} .alert`).removeClass('alert-success alert-danger').addClass(`alert-${color}`);
+                $(`${modal} [name=status]`).val(status);
+                $(`${modal} .text-message`).html(message);
+                $(`${modal} .alert`).removeClass('alert-success alert-danger').addClass(`alert-${color}`);
+            })
+            .fail(errors => {
+                alert('Tidak dapat menampilkan data');
+                return;
+            });
     }
-
     function submitForm(originalForm) {
-      $.post({
-              url: $(originalForm).attr('action'),
-              data: new FormData(originalForm),
-              dataType: 'json',
-              contentType: false,
-              cache: false,
-              processData: false
-          })
-          .done(response => {
-              $(modal).modal('hide');
-              showAlert(response.message, 'success');
-              $('.card-footer').remove();
-          })
-          .fail(errors => {
-              if (errors.status == 422) {
-                  loopErrors(errors.responseJSON.errors);
-                  return;
-              }
-              showAlert(errors.responseJSON.message, 'danger');
-          });
+        $.post({
+                url: $(originalForm).attr('action'),
+                data: new FormData(originalForm),
+                dataType: 'json',
+                contentType: false,
+                cache: false,
+                processData: false
+            })
+            .done(response => {
+                $(modal).modal('hide');
+                showAlert(response.message, 'success');
+                let color = '';
+
+                if (response.data.status == 'confirmed') color = 'success';
+                else if (response.data.status == 'canceled') color = 'danger';
+                $('td span.badge').removeAttr('class').attr('class', `badge badge-${color}`);
+                $('.card-footer').remove();
+            })
+            .fail(errors => {
+                if (errors.status == 422) {
+                    loopErrors(errors.responseJSON.errors);
+                    return;
+                }
+                showAlert(errors.responseJSON.message, 'danger');
+            });
     }
 </script>
-@endpush
+@endpush 
