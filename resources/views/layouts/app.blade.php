@@ -132,6 +132,7 @@
     <!-- AdminLTE App -->
     <script src="{{asset('/AdminLTE/dist/js/adminlte.js')}}"></script>
     <script src="{{asset('/js/custom.js')}}"></script>
+
     <x-toast />
 
     @stack('scripts')

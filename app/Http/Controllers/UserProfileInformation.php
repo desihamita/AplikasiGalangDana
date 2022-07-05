@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Bank;
+use Illuminate\Http\Request;
 
 class UserProfileInformation extends Controller
 {
@@ -15,7 +15,7 @@ class UserProfileInformation extends Controller
             'bank' => Bank::all()->pluck('name', 'id')
         ]);
     }
-    
+
     public function bankDestroy(Request $request, $id)
     {
         $request->user()->bank_user()->detach($id);

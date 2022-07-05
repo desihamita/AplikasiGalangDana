@@ -1,12 +1,13 @@
 <form action="{{ route('user-profile-information.update') }}" method="post" enctype="multipart/form-data">
     @csrf
     @method('put')
+
     <x-card>
         <div class="row justify-content-center">
             <div class="col-lg-4">
                 <div class="text-center">
                     @if (Storage::disk('public')->exists(auth()->user()->path_image))
-                    <img src="{{ Storage::disk('public')->url(auth()->user()->path_image ?? '') }}" alt="" class="img-thumbnail preview-path_image" width="500"> 
+                    <img src="{{ url(auth()->user()->path_image ?? '') }}" alt="" class="img-thumbnail preview-path_image" width="200">
                     @else
                     <img src="{{ asset('AdminLTE/dist/img/user1-128x128.jpg') }}" alt="" class="img-thumbnail preview-path_image" width="200">
                     @endif
@@ -25,7 +26,7 @@
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="name">Nama</label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" 
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name"
                         value="{{ old('name') ?? auth()->user()->name }}">
                     @error('name')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -35,7 +36,7 @@
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" 
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email"
                         value="{{ old('email') ?? auth()->user()->email }}">
                     @error('name')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -44,7 +45,7 @@
             </div>
             <div class="col-lg-4">
                 <label for="role">Role</label>
-                <input type="text" class="form-control @error('role') is-invalid @enderror" name="role" id="role" 
+                <input type="text" class="form-control @error('role') is-invalid @enderror" name="role" id="role"
                     value="{{ old('role') ?? auth()->user()->role->name }}" disabled>
                 @error('role')
                 <span class="invalid-feedback">{{ $message }}</span>
@@ -55,7 +56,7 @@
             <div class="col-lg-6">
                 <div class="form-group">
                     <label for="phone">No. Telp</label>
-                    <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" 
+                    <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone"
                         value="{{ old('phone') ?? auth()->user()->phone }}">
                     @error('phone')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -65,7 +66,7 @@
             <div class="col-lg-6">
                 <div class="form-group">
                     <label for="gender">Jenis Kelamin</label>
-                    <select class="form-control @error('gender') is-invalid @enderror" name="gender" id="gender" 
+                    <select class="form-control @error('gender') is-invalid @enderror" name="gender" id="gender"
                         value="{{ old('gender') ?? auth()->user()->gender }}">
                         <option selected disabled>Pilih salah satu</option>
                         <option value="laki-laki" {{ auth()->user()->gender == 'laki-laki' ? 'selected' : '' }}>Laki-laki</option>
@@ -82,7 +83,7 @@
                 <div class="form-group">
                     <label for="birth_date">Tgl Lahir</label>
                     <div class="input-group datepicker" id="birth_date" data-target-input="nearest">
-                        <input type="text" name="birth_date" class="form-control datetimepicker-input @error('birth_date') is-invalid @enderror" data-target="#birth_date" 
+                        <input type="text" name="birth_date" class="form-control datetimepicker-input @error('birth_date') is-invalid @enderror" data-target="#birth_date"
                             value="{{ old('birth_date') ?? auth()->user()->birth_date }}"/>
                         <div class="input-group-append" data-target="#birth_date" data-toggle="datetimepicker">
                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
@@ -96,7 +97,7 @@
             <div class="col-lg-6">
                 <div class="form-group">
                     <label for="job">Pekerjaan</label>
-                    <input type="text" class="form-control @error('job') is-invalid @enderror" name="job" id="job" 
+                    <input type="text" class="form-control @error('job') is-invalid @enderror" name="job" id="job"
                         value="{{ old('job') ?? auth()->user()->job }}">
                     @error('job')
                     <span class="invalid-feedback">{{ $message }}</span>

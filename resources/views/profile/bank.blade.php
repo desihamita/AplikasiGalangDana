@@ -23,7 +23,7 @@
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="account">Nomor Rekening</label>
-                    <input type="text" class="form-control @error('account') is-invalid @enderror" name="account" id="account" 
+                    <input type="text" class="form-control @error('account') is-invalid @enderror" name="account" id="account"
                         value="{{ old('account') }}">
                     @error('account')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -33,7 +33,7 @@
             <div class="col-lg-4">
                 <div class="form-group">
                     <label for="name">Nama</label>
-                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name" 
+                    <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" id="name"
                         value="{{ old('name') }}">
                     @error('name')
                     <span class="invalid-feedback">{{ $message }}</span>
@@ -41,6 +41,20 @@
                 </div>
             </div>
         </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input  @error('is_main') is-invalid @enderror" id="is_main" name="is_main"
+                        value="{{ old('is_main') ?? 1 }}"
+                        {{ old('is_main') == 1 ? 'checked' : '' }}>
+                    <label class="custom-control-label" for="is_main">Akun utama?</label>
+                    @error('is_main')
+                    <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
         <x-slot name="footer">
             <button type="reset" class="btn btn-dark">Reset</button>
             <button class="btn btn-primary">Simpan</button>
@@ -52,7 +66,7 @@
     <x-slot name="header">
         <h5 class="card-title">Daftar Bank</h5>
     </x-slot>
-    
+
     <x-table>
         <x-slot name="thead">
             <th width="5%">No</th>

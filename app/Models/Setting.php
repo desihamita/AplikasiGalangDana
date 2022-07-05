@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Bank;
 
 class Setting extends Model
@@ -12,7 +12,7 @@ class Setting extends Model
     public function bank_setting()
     {
         return $this->belongsToMany(Bank::class, 'bank_setting', 'setting_id')
-        ->withPivot('account', 'name')
+        ->withPivot('account', 'name', 'is_main')
         ->withTimestamps();
     }
 }

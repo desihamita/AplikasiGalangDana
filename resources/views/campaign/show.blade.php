@@ -80,15 +80,17 @@
                 <div class="progress-bar" role="progressbar" style="width: {{ $campaign->nominal / $campaign->goal * 100 }}%" aria-valuenow="{{ $campaign->nominal / $campaign->goal * 100 }}" aria-valuemin="0" aria-valuemax="{{ 100 }}"></div>
             </div>
 
-            <div class="d-flex justify-content-between">
-                <div class="d-flex justify-content-between mt-1">
-                    <p>{{ $campaign->nominal / $campaign->goal * 100 }}% tercapai</p>
-                    @if (now()->parse($campaign->end_date)->lt(now()))
+            <div class="d-flex justify-content-between mt-1">
+                <p>{{ $campaign->nominal / $campaign->goal * 100 }}% tercapai</p>
+                @if (now()->parse($campaign->end_date)->lt(now()))
                     <p>selesai {{ now()->parse($campaign->end_date)->diffForHumans() }}</p>
-                    @else
+                @else
                     <p>tersisa {{ now()->parse($campaign->end_date)->diffForHumans() }}</p>
-                    @endif
-                </div>
+                @endif
+            </div>
+
+            <div class="mt-2 mb-4">
+                <a href="{{ route('campaign.cashout', $campaign->id) }}" class="btn btn-success btn-lg btn-block">Cairkan Sekarang</a>
             </div>
 
             <h4 class="font-weight-bold">Donatur ({{ $campaign->donations->count() }})</h4>
