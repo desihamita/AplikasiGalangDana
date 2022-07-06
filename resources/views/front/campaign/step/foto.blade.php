@@ -15,4 +15,4 @@
 <div class="form-group">
     <button type="button" class="btn btn-outline-primary" onclick="stepper.previous()">Sebelumnya</button>
     <button type="button" class="btn btn-primary" onclick="stepper.next()">Selanjutnya</button>
-</div>
+</div>  

@@ -11,6 +11,7 @@ use App\Http\Controllers\{
     ContactController,
     SubscriberController,
     ReportController,
+    CashoutController,
 };
 use App\Http\Controllers\Front\{
     AboutController,
@@ -88,9 +89,13 @@ Route::group([
     Route::put('/campaign/{id}/update_status', [CampaignController::class, 'updateStatus'])->name('campaign.update_status');
 
     Route::get('/campaign/{id}/cashout', [CampaignController::class, 'cashout'])->name('campaign.cashout');
+    Route::post('/campaign/{id}/cashout', [CampaignController::class, 'cashoutStore'])->name('campaign.cashout.store');
 
     Route::get('/donation/data', [DonationController::class, 'data'])->name('donation.data');
     Route::resource('/donation', DonationController::class);
+
+    Route::get('/cashout/data', [CashoutController::class, 'data'])->name('cashout.data');
+    Route::resource('/cashout', CashoutController::class);
 
     Route::group([
         'middleware' => 'role:admin'

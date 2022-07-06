@@ -17,36 +17,51 @@ class DonationController extends Controller
     public function data()
     {
         $query = Donation::with('campaign','user', 'payment')
-            ->when(auth()->user()->hasRole('donatur'), function ($query) {
-                $query->donatur();
-            })
-            ->orderBy('created_at');
+        ->when(auth()->user()->hasRole('donatur'), function ($query) {
+            $query->donatur();
+        })
+        ->when($request->has('status') && $request->status != "", function ($query) use ($request) {
+            $query->where('status', $request->status);
+        })
+        ->orderBy('created_at');
 
-        return datatables($query)
-            ->addIndexColumn()
-            ->editColumn('title', function ($query) {
-                return $query->campaign->title;
-            })
-            ->editColumn('name', function ($query) {
-                return $query->user->name;
-            })
-            ->editColumn('nominal', function ($query) {
-                return format_uang($query->nominal);
-            })
-            ->editColumn('status', function ($query) {
-                return '<span class="badge badge-'. $query->statusColor() .'">'. $query->statusText() .'</span>';
-            })
-            ->editColumn('created_at', function ($query) {
-                return tanggal_indonesia($query->created_at);
-            })
-            ->addColumn('action', function ($query) {
-                return '
-                    <a href="'. route('donation.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
+    return datatables($query)
+        ->addIndexColumn()
+        ->editColumn('title', function ($query) {
+            return $query->campaign->title;
+        })
+        ->editColumn('name', function ($query) {
+            return $query->user->name;
+        })
+        ->editColumn('nominal', function ($query) {
+            return format_uang($query->nominal);
+        })
+        ->editColumn('status', function ($query) {
+            return '<span class="badge badge-'. $query->statusColor() .'">'. $query->statusText() .'</span>';
+        })
+        ->editColumn('created_at', function ($query) {
+            return tanggal_indonesia($query->created_at);
+        })
+        ->addColumn('action', function ($query) {
+            $action = '';
+            if ($query->user_id == auth()->id()) {
+                $action .= '<a href="'. url('/donation/'. $query->campaign->id .'/payment-confirmation/'. $query->order_number) .'" class="btn btn-link text-primary"><i class="fas fa-hand-holding-usd"></i></a>';
+            }
+
+            $action .= '
+                <a href="'. route('donation.show', $query->id) .'" class="btn btn-link text-dark"><i class="fas fa-search-plus"></i></a>
+            ';
+
+            if ($query->status != 'confirmed') {
+                $action .= '
                     <button class="btn btn-link text-danger" onclick="deleteData(`'. route('donation.destroy', $query->id) .'`)"><i class="fas fa-trash-alt"></i></button>
                 ';
-            })
-            ->escapeColumns([])
-            ->make(true);
+            }
+
+            return $action;
+        })
+        ->escapeColumns([])
+        ->make(true);
     }
 
     public function show(Request $request, $id)
@@ -75,7 +90,18 @@ class DonationController extends Controller
             'status' => $request->status
         ]);
 
-        return response()->json(['data' => $donation, 'message' => 'Donasi berhasil dibatalkan']);
+        $donation->campaign->update([
+            'nominal' => $donation->campaign->nominal + $donation->nominal
+        ]);
+
+        $statusText = "";
+        if ($request->status == 'confirmed') {
+            $statusText = 'dikonfirmasi';
+        } elseif ($request->status == 'canceled') {
+            $statusText = 'dibatalkan';
+        }
+
+        return response()->json(['data' => $donation, 'message' => 'Donasi berhasil '. $statusText]);
     }
 
     public function destroy($id)

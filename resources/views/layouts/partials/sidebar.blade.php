@@ -81,7 +81,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="" class="nav-link {{ request()->is('admin/cashout*') ? 'active' : '' }}">
+                    <a href="{{ route('cashout.index')}}" class="nav-link {{ request()->is('admin/cashout*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-hand-holding-usd"></i>
                         <p>
                             Daftar Pencairan

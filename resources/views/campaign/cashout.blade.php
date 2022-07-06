@@ -1,19 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Campaign')
-
+@section('title', 'Projek')
 @section('breadcrumb')
-@parent
-<li class="breadcrumb-item "><a href="{{ route('campaign.index')}}">Campaign</a></li>
-<li class="breadcrumb-item active">Pencairan</li>
+    @parent
+    <li class="breadcrumb-item"><a href="{{ route('campaign.index') }}">Projek</a></li>
+    <li class="breadcrumb-item active">Pencairan</li>
 @endsection
 
 @push('css')
-    <style>
-        .pre {
-            font-family: "Courier New", monospace;
-        }
-    </style>
+<style>
+    .pre {
+        font-family: "Courier New", monospace;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -21,29 +20,29 @@
     <div class="col-lg-7">
         <x-card>
             <x-slot name="header">
-                <h3>{{ $campaign->title}}</h3>
-                <p class="font-weight-bold mb-0">Diposting oleh
-                    <span class="text-primary">{{ $campaign->user->name }}</span>
-                    <small class="d-block">{{ tanggal_indonesia($campaign->publish_date) }}
-                        {{ date('H:i', strtotime($campaign->publish_date))}}</small>
+                <h3>{{ $campaign->title }}</h3>
+                <p class="font-weight-bold mb-0">
+                    Diposting oleh <span class="text-primary">{{ $campaign->user->name }}</span>
+                    <small class="d-block">{{ tanggal_indonesia($campaign->publish_date) }} {{ date('H:i', strtotime($campaign->publish_date)) }}</small>
                 </p>
             </x-slot>
+
             {!! $campaign->body !!}
 
             <x-slot name="footer">
                 <h1 class="font-weight-bold">Rp. {{ format_uang($campaign->nominal) }}</h1>
-                <p class="font-weight-bold">Terkumpul dari Rp. {{ format_uang($campaign->goal) }}</p>
-                <div class="progress" style="height: .3rem;">
-                    <div class="progress-bar" role="progressbar" style="width: {{ $campaign->nominal / $campaign->goal * 100 }}%" aria-valuenow="{{ $campaign->nominal / $campaign->goal * 100 }}" aria-valuemin="0" aria-valuemax="{{ 100 }}"></div>
-                </div>
-                <div class="d-flex justify-content-between mt-1">
-                    <p>{{ $campaign->nominal / $campaign->goal * 100 }}% tercapai</p>
-                    @if (now()->parse($campaign->end_date)->lt(now()))
-                    <p>selesai {{ now()->parse($campaign->end_date)->diffForHumans() }}</p>
-                    @else
-                    <p>tersisa {{ now()->parse($campaign->end_date)->diffForHumans() }}</p>
-                    @endif
-                </div>
+            <p class="font-weight-bold">Terkumpul dari Rp. {{ format_uang($campaign->goal) }}</p>
+            <div class="progress" style="height: .3rem;">
+                <div class="progress-bar" role="progressbar" style="width: {{ $campaign->nominal / $campaign->goal * 100 }}%" aria-valuenow="{{ $campaign->nominal / $campaign->goal * 100 }}" aria-valuemin="0" aria-valuemax="{{ 100 }}"></div>
+            </div>
+            <div class="d-flex justify-content-between mt-1">
+                <p>{{ $campaign->nominal / $campaign->goal * 100 }}% tercapai</p>
+                @if (now()->parse($campaign->end_date)->lt(now()))
+                <p>selesai {{ now()->parse($campaign->end_date)->diffForHumans() }}</p>
+                @else
+                <p>tersisa {{ now()->parse($campaign->end_date)->diffForHumans() }}</p>
+                @endif
+            </div>
             </x-slot>
         </x-card>
 
@@ -51,23 +50,23 @@
             $bank = $campaign->user->mainAccount();
         @endphp
 
-        <x-card>
-            <h3 class="mb-3">Rekening Bank Tujuan : </h3>
+        <x-card class="pre">
+            <h3 class="mb-3">Rekening bank tujuan:</h3>
             <div class="row">
                 <div class="col-lg-4">
-                    <p class="mb-0 font-weight-bold">Nama Bank : </p>
+                    <p class="mb-0 font-weight-bold">Nama bank:</p>
                     @if ($bank)
                     <input type="text" class="form-control-plaintext bank-name" value="{{ $bank->name }}" readonly>
                     @endif
                 </div>
                 <div class="col-lg-4">
-                    <p class="mb-0 font-weight-bold">Nomor Rekening : </p>
+                    <p class="mb-0 font-weight-bold">Nomor rekening:</p>
                     @if ($bank)
                     <input type="text" class="form-control-plaintext bank-account" value="{{ sembunyikan_text($bank->pivot->account, 3) }}" readonly>
                     @endif
                 </div>
                 <div class="col-lg-4">
-                    <p class="mb-0 font-weight-bold">Nama Pemilik Rekening : </p>
+                    <p class="mb-0 font-weight-bold">Nama pemilik rekening:</p>
                     @if ($bank)
                     <input type="text" class="form-control-plaintext bank-ownername" value="{{ sembunyikan_text($bank->pivot->name, 1) }}" readonly>
                     @endif
@@ -84,13 +83,22 @@
     </div>
 
     <div class="col-lg-5">
-        <h3 class="text-primary">Yang bisa dicairkan: Rp. {{ format_uang($campaign->nominal) }}</h3>
+        <h3 class="text-primary">Yang bisa dicairkan: Rp. {{ format_uang($campaign->nominal - $campaign->cashouts->whereIn('status', ['success', 'pending'])->sum('cashout_amount')) }}</h3>
+        @if ($campaign->cashouts->whereIn('status', ['success', 'pending'])->sum('cashout_amount') > 0)
+            @if ($campaign->cashout_latest->status == 'success')
+            <h5 class="d-block text-{{ $campaign->cashout_latest->statusColor() }}">Sebelumnya Anda telah mencairkan sebesar Rp. {{ format_uang($campaign->cashout_latest->cashout_amount) }}</h5>
+            <p>Terakhir dibuat pada {{ tanggal_indonesia($campaign->cashout_latest->created_at) }} {{ date('H:i', strtotime($campaign->cashout_latest->created_at)) }}</p>
+            @elseif ($campaign->cashout_latest->status == 'pending')
+            <h5 class="d-block text-{{ $campaign->cashout_latest->statusColor() }}">Admin sedang meninjau permintaan pengajuan pencairan Anda sebelumnya, sebesar Rp. {{ format_uang($campaign->cashout_latest->cashout_amount) }}</h5>
+            <p>Terakhir dibuat pada {{ tanggal_indonesia($campaign->cashout_latest->created_at) }} {{ date('H:i', strtotime($campaign->cashout_latest->created_at)) }}</p>
+            @endif
+        @endif
         <div class="alert alert-light border-primary">
             Disarankan untuk melakukan pencairan dana pada jam kerja normal (Senin-Jumat 08.00-20.00) untuk menghindari transaksi pending dikarenakan terkena cut off time dari bank yang bersangkutan.
         </div>
 
         <x-card>
-            <form action=" " method="post" class="form-pencairan" onsubmit="reviewCashout()">
+            <form action="{{ route('campaign.cashout.store', $campaign->id) }}" method="post" class="form-pencairan" onsubmit="reviewCashout()">
                 @csrf
 
                 <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
@@ -108,7 +116,6 @@
                     </div>
                     <small class="text-danger text-message"></small>
                 </div>
-
                 <div class="form-group">
                     <label for="cashout_fee">Biaya:</label>
                     <div class="input-group">
@@ -118,7 +125,6 @@
                         <input type="text" class="form-control" name="cashout_fee" id="cashout_fee" value="{{ format_uang(5000) }}" readonly>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="amount_received">Jumlah yang diterima:</label>
                     <div class="input-group">
@@ -128,7 +134,6 @@
                         <input type="text" class="form-control" name="amount_received" id="amount_received" readonly>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <label for="remaining_amount">Sisa dana:</label>
                     <div class="input-group">
@@ -138,7 +143,6 @@
                         <input type="text" class="form-control" name="remaining_amount" id="remaining_amount" readonly>
                     </div>
                 </div>
-
                 <div class="form-group">
                     <button type="button" class="btn btn-success review-cashout" onclick="reviewCashout()" disabled>Review Cashout</button>
                 </div>
@@ -201,7 +205,6 @@
 
     <p class="mb-3">Silahkan klik link <a href="{{ route('profile.show') }}?pills=bank">berikut ini</a> untuk update rekening tujuan</p>
 </x-modal>
-
 @endsection
 
 @push('scripts')

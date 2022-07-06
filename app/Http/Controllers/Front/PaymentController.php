@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
+
     public function index($id, $order_number)
     {
         $campaign = Campaign::findOrFail($id);

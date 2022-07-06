@@ -39,7 +39,17 @@
                         <select name="bank_id" id="bank_id" class="form-control @error('bank_id') is-invalid @enderror">
                             <option disabled selected>Pilih Bank</option>
                             @foreach ($bank as $key => $item)
-                                <option value="{{ $key }}" {{old('bank_id') == $key ? 'selected' : ($payment->bank_id == $key ? 'selected' : '')}}>{{ $item }}</option>
+                                <option value="{{ $key }}" {{
+                                    old('bank_id') == $key
+                                    ? 'selected'
+                                    : ($payment->bank_id == $key
+                                        ? 'selected'
+                                        : ($mainAccount && $mainAccount->pivot->bank_id == $key
+                                            ? 'selected'
+                                            : ''
+                                        )
+                                    )
+                                }}>{{ $item }}</option>
                             @endforeach
                         </select>
 

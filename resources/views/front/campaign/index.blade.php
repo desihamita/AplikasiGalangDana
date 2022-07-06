@@ -54,7 +54,7 @@
                     </div>
                 </div>
                 <div class="bs-stepper-content">
-                    <form action="{{ isset($campaign) ? route('campaign.update', $campaign->id) : '' }}" method="post" onsubmit="submitForm(this)" enctype="multipart/form-data">
+                    <form action="{{ isset($campaign) ? route('campaign.update', $campaign->id) : route('campaign.store') }}" method="post" onsubmit="submitForm(this)" enctype="multipart/form-data">
                         @csrf
 
                         @isset($campaign)

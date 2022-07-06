@@ -169,23 +169,19 @@
 @push('scripts')
 <script>
     let modal = '#modal-form';
-    function editForm(url, status, message, color) {
-        $.get(url)
-            .done(response => {
-                $(modal).modal('show');
-                $(`${modal} form`).attr('action', url);
-                $(`${modal} [name=_method]`).val('put');
-                resetForm(`${modal} form`);
 
-                $(`${modal} [name=status]`).val(status);
-                $(`${modal} .text-message`).html(message);
-                $(`${modal} .alert`).removeClass('alert-success alert-danger').addClass(`alert-${color}`);
-            })
-            .fail(errors => {
-                alert('Tidak dapat menampilkan data');
-                return;
-            });
+    function editForm(url, status, message, color) {
+        $(modal).modal('show');
+        $(`${modal} form`).attr('action', url);
+        $(`${modal} [name=_method]`).val('put');
+
+        resetForm(`${modal} form`);
+
+        $(`${modal} [name=status]`).val(status);
+        $(`${modal} .text-message`).html(message);
+        $(`${modal} .alert`).removeClass('alert-success alert-danger').addClass(`alert-${color}`);
     }
+
     function submitForm(originalForm) {
         $.post({
                 url: $(originalForm).attr('action'),
@@ -198,10 +194,12 @@
             .done(response => {
                 $(modal).modal('hide');
                 showAlert(response.message, 'success');
+
                 let color = '';
 
                 if (response.data.status == 'confirmed') color = 'success';
                 else if (response.data.status == 'canceled') color = 'danger';
+
                 $('td span.badge').removeAttr('class').attr('class', `badge badge-${color}`);
                 $('.card-footer').remove();
             })
@@ -210,8 +208,9 @@
                     loopErrors(errors.responseJSON.errors);
                     return;
                 }
+
                 showAlert(errors.responseJSON.message, 'danger');
             });
     }
 </script>
-@endpush 
+@endpush
