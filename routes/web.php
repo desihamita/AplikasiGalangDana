@@ -20,7 +20,7 @@ use App\Http\Controllers\Front\{
     DonationController as FrontDonationController,
     FrontController,
     PaymentController,
-    SubcriberController as FrontSubcriberController
+    SubscriberController as FrontSubcriberController,
 };
 use Illuminate\Support\Facades\Route;
 

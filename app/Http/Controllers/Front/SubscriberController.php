@@ -7,7 +7,7 @@ use App\Models\Subscriber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SubcriberController extends Controller
+class SubscriberController extends Controller
 {
     public function store(Request $request)
     {
